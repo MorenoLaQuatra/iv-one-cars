@@ -8,9 +8,15 @@
 		<title>Cars</title>
 	</head>
 	<body>
-		<h1>Cars</h1>
+		<h1 align="center">Cars</h1>
+		<h2 align="center">IV - Homework 1</h3>
+		<h3 align="center">Moreno La Quatra - M2 Data Science @ MoSIG</h3>
 
 		<script src="../vendor/d3/d3.js"></script>
+		<script src="https://d3js.org/d3-color.v1.min.js"></script>
+		<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+		<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
 		<script>
 
 var body = d3.select("body");
@@ -26,7 +32,182 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 	    	return t;
 	    })
 
+	console.log(data);
+
+	data.forEach(function(d) {
+		d.weight = +d.weight;
+		d.mpg = +d.mpg;
+	});
+
+	var totalWidth = 800;
+	var totalHeight = 400;
+	var margin = {top: 20, right: 100, bottom: 20, left: 40};
+	width = totalWidth - margin.left - margin.right;
+	height = totalHeight - margin.top - margin.bottom;
+
+	var scaleX = d3.scaleLinear()
+								 .domain([ 0 , d3.max(data, function (d,i) { return d.weight })])
+								 .range([0, width]);
+	var scaleY = d3.scaleLinear()
+								 .domain([ 0 , d3.max(data, function (d,i) { return d.mpg })])
+								 .range([height, 0]);
+
+	var box = body.append('svg:svg')
+							 .attr('width', totalWidth)
+							 .attr('height', totalHeight)
+							 .attr('class', 'box')
+
+	var chart = box.append('g')
+								 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+								 .attr('width', width)
+								 .attr('height', height)
+								 .attr('class', 'chart')
+
+	 // X axis
+ 	var xAxis = d3.axisBottom().scale(scaleX);
+
+ 	chart.append('g')
+ 			 .attr('transform', 'translate(0,' + height + ')')
+ 			 .attr('class', 'chart axis')
+ 			 .call(xAxis);
+
+ 	// Y axis
+ 	var yAxis = d3.axisLeft().scale(scaleY);
+
+ 	chart.append('g')
+ 			 .attr('transform', 'translate(0,0)')
+ 			 .attr('class', 'chart axis')
+ 			 .call(yAxis);
+
+
+ 	// fill the chart
+ 	var g = chart.append("svg:g");
+
+ 	var title = g.append("text")
+ 							 .attr("x", (width / 2))
+ 							 .attr("y", 0)
+ 							 .attr("text-anchor", "middle")
+ 							 .style("font-size", "12px")
+ 							 .text("Cars Dataset");
+
+
+	var min_year = d3.min(data, function (d,i) { return d.year });
+	var max_year = d3.max(data, function (d,i) { return d.year });
+
+ 	// point to be visualized for the selected k
+ 	g.selectAll("scatter-dots")
+ 	 .data(data)  // using the data
+ 	 .enter().append("path")
+	 				 .attr("transform", function(d) { return "translate(" + scaleX(d.weight) + "," + scaleY(d.mpg) + ")"; })
+	 				 .attr("d", d3.symbol()
+	         		.size(30)
+	         		.type(function(d) { return getShape(d.origin); }))
+					 .attr("style", function(d) { return "stroke: " + d3.interpolateBlues(getInZeroOne(min_year, max_year, d.year)) })
+					 .style("fill", function(d) { return "#FFFFFF";});
+
+
+
+	var years = [];
+	var countries = [];
+
+	data.forEach(function (d) {
+		if (years.indexOf(d.year) === -1){
+			years.push(d.year);
+		}
+		if (countries.indexOf(d.origin) === -1){
+			countries.push(d.origin);
+		}
+	});
+
+	console.log(countries);
+
+	var legendRectSize = 10;
+	var legendSpacing = 10;
+
+	var legend = g.selectAll('.legend')
+							  .append('g')
+							  .attr('class', 'legend')
+							  .attr('transform', function(d, i) {
+							    var height = legendRectSize + legendSpacing;
+							    var offset =  years.length / 2;
+							    var horz = width;
+							    var vert = i * height - offset;
+							    return 'translate(' + horz + ',' + vert + ')';
+							  });
+
+	legend.data(years)
+				.enter().append('rect')
+				.attr('transform', function(d, i) {
+					var height = legendRectSize + legendSpacing;
+					var offset =  years.length / 2;
+					var horz = width + 10;
+					var vert = i * height - offset;
+					return 'translate(' + horz + ',' + vert + ')';
+				})
+				.attr('width', legendRectSize)
+			  .attr('height', legendRectSize)
+			  .style('fill', function(d) { return d3.interpolateBlues( getInZeroOne(min_year, max_year, d)) })
+			  .style('stroke', "#000");
+
+	legend.data(years)
+				.enter()
+				.append('text')
+				.attr('transform', function(d, i) {
+					var height = legendRectSize + legendSpacing;
+					var offset =  years.length / 2;
+					var horz = width + 10;
+					var vert = i * height - offset;
+					return 'translate(' + horz + ',' + vert + ')';
+				})
+				.attr('x', legendRectSize + legendSpacing)
+				.attr('y', legendRectSize )
+				.text(function(d) { return d; });
+
+	legend.data(countries)
+				.enter().append('path')
+				.attr('transform', function(d, i) {
+					var height = legendRectSize + legendSpacing;
+					var offset = years.length * (legendRectSize + legendSpacing);
+					var horz = width + 15;
+					var vert = i * height + offset;
+					return 'translate(' + horz + ',' + vert + ')';
+				})
+				.attr("d", d3.symbol()
+					 .size(legendRectSize*legendRectSize/2)
+					 .type(function(d) { return getShape(d); }));
+
+	legend.data(countries)
+				.enter()
+				.append('text')
+				.attr('transform', function(d, i) {
+					var height = legendRectSize + legendSpacing;
+					var offset = years.length * (legendRectSize + legendSpacing) -5;
+					var horz = width + 10;
+					var vert = i * height + offset;
+					return 'translate(' + horz + ',' + vert + ')';
+				})
+				.attr('x', legendRectSize + legendSpacing)
+				.attr('y', legendRectSize )
+				.text(function(d) { return d; });
+
+
 });
+
+
+function getShape(d){
+	if (d === "USA"){
+		return d3.symbolCross;
+	} else if (d === "Europe") {
+		return d3.symbolCircle;
+	} else {
+		return d3.symbolSquare;
+	}
+}
+
+function getInZeroOne(min, max, value){
+	return 1 - ((max - value) / (max - min))
+}
+
 
 		</script>
 	</body>
