@@ -4,6 +4,17 @@
 		<meta charset="utf-8">
 		<style type="text/css" media="screen, print">
 			body { margin: 30px 50px; font-family: sans-serif; }
+			div.tooltip {
+			    position: absolute;
+			    text-align: center;
+			    padding: 4px;
+			    font: 12px sans-serif;
+			    background: lightsteelblue;
+			    border: 0px;
+			    border-radius: 4px;
+			    pointer-events: none;
+
+			}
 		</style>
 
 		<title>Cars</title>
@@ -104,7 +115,7 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 								.attr("width", totalWidth)
 							  .attr("x", - margin.left)
 							  .attr("y", - margin.top)
-						 	  .style("fill", "#CCCCCC");
+						 	  .style("fill", "lightsteelblue");
 
 	var title = chart.append("text")
 									 .attr("x", ((totalWidth - margin.left) / 2))
@@ -128,13 +139,30 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 											  .style("fill", "none")
 											  .style("stroke-width", "1");
 
+	var div = d3.select("body").append("div")
+							.attr("class", "tooltip")
+							.style("opacity", 0);
+
 	g.selectAll("scatter-dots")
 		.data(data)  // using the data
 		.enter().append("path")
 						 .attr("transform", function(d) { return "translate(" + scaleX(d.weight) + "," + scaleY(d.mpg) + ")"; })
 						 .attr("d", function (d) { return getShape(d.origin); } )
 						 .attr("style", function(d) { return "stroke: " + d3.interpolateBlues(getInZeroOne(min_year, max_year, d.year)) })
-						 .style("fill", "#FFFFFF");
+						 .style("fill", "#FFFFFF")
+						 .on("mouseover", function(d) {
+			            div.transition()
+			                .duration(200)
+			                .style("opacity", .9);
+			            div	.html(d.name)
+			                .style("left", (d3.event.pageX) + "px")
+			                .style("top", (d3.event.pageY - 28) + "px");
+			            })
+			        .on("mouseout", function(d) {
+			            div.transition()
+			                .duration(500)
+			                .style("opacity", 0);
+			        });;
 
 
 
