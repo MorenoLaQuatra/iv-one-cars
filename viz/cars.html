@@ -43,11 +43,11 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 
 	var totalWidth = 800;
 	var totalHeight = 400;
-	var legendWidth = 100;
+	var legendWidth = 60;
 	var xLabelHeight = 40;
 	var yLabelHeight = 20;
 
-	var margin = {top: 40, right: legendWidth + 20, bottom: 30, left: 40 + yLabelHeight};
+	var margin = {top: 40, right: legendWidth, bottom: 30, left: 50};
 	width = totalWidth - margin.left - margin.right - xLabelHeight;
 	height = totalHeight - margin.top - margin.bottom - yLabelHeight;
 
@@ -197,8 +197,8 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 				.enter().append('rect')
 				.attr('transform', function(d, i) {
 					var height = legendRectSize + legendSpacing;
-					var offset =  years.length / 2 - 20;
-					var horz = width + margin.left - yLabelHeight;
+					var offset =  years.length / 2;
+					var horz = width + margin.left - yLabelHeight*2;
 					var vert = i * height - offset;
 					return 'translate(' + horz + ',' + vert + ')';
 				})
@@ -212,8 +212,8 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 				.append('text')
 				.attr('transform', function(d, i) {
 					var height = legendRectSize + legendSpacing;
-					var offset =  years.length / 2 - 20;
-					var horz = width + margin.left - yLabelHeight;
+					var offset =  years.length / 2;
+					var horz = width + margin.left - yLabelHeight*2;
 					var vert = i * height - offset;
 					return 'translate(' + horz + ',' + vert + ')';
 				})
@@ -225,8 +225,8 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 				.enter().append('path')
 				.attr('transform', function(d, i) {
 					var height = legendRectSize + legendSpacing;
-					var offset = years.length * (legendRectSize + legendSpacing) + 25;
-					var horz = width + margin.left - yLabelHeight + 5;
+					var offset = years.length * (legendRectSize + legendSpacing) + 5;
+					var horz = width + margin.left - yLabelHeight*2 + 5;
 					var vert = i * height + offset;
 					return 'translate(' + horz + ',' + vert + ')';
 				})
@@ -240,8 +240,8 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 				.append('text')
 				.attr('transform', function(d, i) {
 					var height = legendRectSize + legendSpacing;
-					var offset = years.length * (legendRectSize + legendSpacing) +20;
-					var horz = width + margin.left - yLabelHeight;
+					var offset = years.length * (legendRectSize + legendSpacing);
+					var horz = width + margin.left - yLabelHeight*2;
 					var vert = i * height + offset;
 					return 'translate(' + horz + ',' + vert + ')';
 				})
