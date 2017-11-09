@@ -167,7 +167,7 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 				.enter().append('path')
 				.attr('transform', function(d, i) {
 					var height = legendRectSize + legendSpacing;
-					var offset = years.length * (legendRectSize + legendSpacing);
+					var offset = years.length * (legendRectSize + legendSpacing) + 5;
 					var horz = width + 15;
 					var vert = i * height + offset;
 					return 'translate(' + horz + ',' + vert + ')';
@@ -181,7 +181,7 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 				.append('text')
 				.attr('transform', function(d, i) {
 					var height = legendRectSize + legendSpacing;
-					var offset = years.length * (legendRectSize + legendSpacing) -5;
+					var offset = years.length * (legendRectSize + legendSpacing);
 					var horz = width + 10;
 					var vert = i * height + offset;
 					return 'translate(' + horz + ',' + vert + ')';
