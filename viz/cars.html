@@ -36,10 +36,14 @@ var body = d3.select("body");
 d3.tsv("../data/cars.tsv", function(error, data) {
 	if(error) throw error;
 
+	/* number conversion */
+
 	data.forEach(function(d) {
 		d.weight = +d.weight;
 		d.mpg = +d.mpg;
 	});
+
+	/* graph parameters */
 
 	var totalWidth = 900;
 	var totalHeight = 600;
@@ -57,6 +61,8 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 	var max_mpg = d3.max(data, function (d,i) { return d.mpg });
 	var min_year = d3.min(data, function (d,i) { return d.year });
 	var max_year = d3.max(data, function (d,i) { return d.year });
+
+	/* scale definition */
 
 	var scaleX = d3.scaleLinear()
 								 .domain([ min_weight - (min_weight / 10) , max_weight + (max_weight / 10) ])
@@ -76,7 +82,8 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 								 .attr('height', height)
 								 .attr('class', 'chart')
 
-	 // X axis
+	// X axis
+
  	var xAxis = d3.axisBottom().scale(scaleX);
 
  	chart.append('g')
@@ -92,6 +99,7 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 			 .text("Weight");
 
  	// Y axis
+
  	var yAxis = d3.axisLeft().scale(scaleY);
 
  	chart.append('g')
@@ -110,12 +118,16 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 			 .text("MPG");
 
 
+	/* title - background */
+
 	var bg = chart.append("rect")
 								.attr("height",  margin.top - 15)
 								.attr("width", totalWidth)
 							  .attr("x", - margin.left)
 							  .attr("y", - margin.top)
 						 	  .style("fill", "lightsteelblue");
+
+	/* title text */
 
 	var title = chart.append("text")
 									 .attr("x", ((totalWidth - margin.left) / 2))
@@ -127,7 +139,8 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 									 .text("Auto Fuel Efficiency by Weight, indicating year (1970 - 1982) and Origin");
 
 
- 	// fill the chart
+	/* chart */
+
  	var g = chart.append("svg:g");
 
 	var borderPath = chart.append("rect")
@@ -142,6 +155,8 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 	var div = d3.select("body").append("div")
 							.attr("class", "tooltip")
 							.style("opacity", 0);
+
+	/* data appending */
 
 	g.selectAll("scatter-dots")
 		.data(data)  // using the data
@@ -169,6 +184,8 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 	var years = [];
 	var countries = [];
 
+	/* arrays definition */
+	
 	data.forEach(function (d) {
 		if (years.indexOf(d.year) === -1){
 			years.push(d.year);
@@ -178,6 +195,7 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 		}
 	});
 
+	/* legend definition */
 
 	var legendRectSize = 10;
 	var legendSpacing = 10;
@@ -194,6 +212,7 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 							  });
 
 
+	/* country legend */
 
 	legend.data(countries)
 				.enter().append('path')
@@ -222,6 +241,8 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 				.attr('x', legendRectSize + legendSpacing)
 				.attr('y', legendRectSize )
 				.text(function(d) { return d; });
+
+	/* years legend */
 
 	legend.data(years)
 				.enter().append('rect')
@@ -260,10 +281,13 @@ d3.tsv("../data/cars.tsv", function(error, data) {
 function getShape(d){
 
 	if (d === "USA"){
+		/* cross */
 		return "M -4,0 L 4,0 M 0,-4 L 0,4";
 	} else if (d === "Europe") {
+		/* circle */
 		return "M 0 -4 a 4 4 0 1 0 0.001 0"
 	} else {
+		/* square */
 		return "M -4,-4 l 8,0  0,8  -8,0  0,-8";
 	}
 }
